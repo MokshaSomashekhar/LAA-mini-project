@@ -1,7 +1,6 @@
 """
 Gesture-Based Drawing System
 =============================
-Compatible with mediapipe >= 0.10.x (new Tasks API)
 
 Install:
     pip install opencv-python mediapipe numpy
