@@ -84,3 +84,8 @@ $$Output = (F \odot \neg M) \oplus C$$
 The MediaPipe landmarks are returned as normalized coordinates $(x_{norm}, y_{norm})$ in the range $[0, 1]$. These are mapped to screen pixels using:
 $$x_{pixel} = x_{norm} \cdot Width_{cam}$$
 $$y_{pixel} = y_{norm} \cdot Height_{cam}$$
+
+## How to Run
+1. Clone the repo: `git clone https://github.com/MokshaSomashekhar/LAA-mini-project.git`
+2. Install dependencies: `pip install -r requirements.txt`
+3. Run the application: `python gesture_draw.py`
