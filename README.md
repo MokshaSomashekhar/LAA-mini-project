@@ -59,25 +59,26 @@ The system utilizes the **MediaPipe Hand Landmarker**. It tracks 21 coordinates 
 * **MediaPipe**: Hand tracking framework.
 * **NumPy**: Matrix operations for the canvas.
 
-## Mathematical & Matrix Logic
+## 📐 Linear Algebra Applications (LAA)
 
-The system treats the drawing area as a 3D tensor (matrix) using NumPy, where the dimensions are $(Height, Width, Channels)$.
+This project serves as a practical implementation of several core Linear Algebra concepts:
 
-### 1. Canvas Representation
-The drawing canvas is initialized as a zero-valued matrix:
-$$C \in \{0, \dots, 255\}^{H \times W \times 3}$$
-Each pixel $C(x,y)$ starts as $[0, 0, 0]$ (pure black). When you draw, the system modifies the values at specific indices based on your hand's $(x, y)$ coordinates.
+### 1. Coordinate Normalization (Basis Change)
+MediaPipe returns landmarks in a normalized unit basis $\mathcal{B}_{norm} \in [0, 1]$. To render these on a $1280 \times 720$ screen, we apply a scaling transformation matrix $T$:
 
-### 2. Image Compositing (The "Overlay" Math)
-To display the drawing over the webcam feed without the black background, the system performs a three-step bitwise operation:
+$$T = \begin{bmatrix} 1280 & 0 \\ 0 & 720 \end{bmatrix}$$
 
-1. **Thresholding**: Create a binary mask $M$ where any pixel that isn't black becomes white ($255$).
-2. **Background Extraction**:
-   $$Frame_{bg} = Frame \text{ AND } (\text{NOT } M)$$
-   *This cuts "holes" in the webcam feed exactly where the drawing exists.*
-3. **Final Merge**:
-   $$Output = Frame_{bg} + Canvas$$
-   *This fills the "holes" with the colored pixels from your drawing.*
+### 2. Euclidean Metric (Distance Formula)
+Gesture triggers (like "Pinching") are determined by the $L^2$ norm between the Index tip $\vec{v}_i$ and Thumb tip $\vec{v}_t$:
+
+$$\text{dist} = \|\vec{v}_i - \vec{v}_t\|_2 = \sqrt{(x_i - x_t)^2 + (y_i - y_t)^2}$$
+
+### 3. Matrix Masking & Synthesis
+The final output is a linear combination of the camera frame matrix $F$ and the canvas matrix $C$. We use bitwise operations to create a binary mask, ensuring the drawing overlay is mathematically blended without losing transparency.
+
+$$Output = (F \odot \neg M) \oplus C$$
+
+*(Where $\odot$ represents the Hadamard product with the inverse mask and $\oplus$ represents the additive synthesis of the drawing layer.)*
 
 ### 3. Coordinate Mapping
 The MediaPipe landmarks are returned as normalized coordinates $(x_{norm}, y_{norm})$ in the range $[0, 1]$. These are mapped to screen pixels using:
