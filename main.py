@@ -270,7 +270,8 @@ def main():
                 for i in range(len(COLORS)):
                     cx = 16 + i * 50
                     if abs(px - cx) < 25:
-                        s.color_idx = i
+                        s.color_id
+                        x = i
                         break
                 s.drawing = False; s.last_pt = None; s.snap_canvas = None
 
