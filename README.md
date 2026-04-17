@@ -58,3 +58,28 @@ The system utilizes the **MediaPipe Hand Landmarker**. It tracks 21 coordinates 
 * **OpenCV**: Video capture and UI rendering.
 * **MediaPipe**: Hand tracking framework.
 * **NumPy**: Matrix operations for the canvas.
+
+## Mathematical & Matrix Logic
+
+The system treats the drawing area as a 3D tensor (matrix) using NumPy, where the dimensions are $(Height, Width, Channels)$.
+
+### 1. Canvas Representation
+The drawing canvas is initialized as a zero-valued matrix:
+$$C \in \{0, \dots, 255\}^{H \times W \times 3}$$
+Each pixel $C(x,y)$ starts as $[0, 0, 0]$ (pure black). When you draw, the system modifies the values at specific indices based on your hand's $(x, y)$ coordinates.
+
+### 2. Image Compositing (The "Overlay" Math)
+To display the drawing over the webcam feed without the black background, the system performs a three-step bitwise operation:
+
+1. **Thresholding**: Create a binary mask $M$ where any pixel that isn't black becomes white ($255$).
+2. **Background Extraction**:
+   $$Frame_{bg} = Frame \text{ AND } (\text{NOT } M)$$
+   *This cuts "holes" in the webcam feed exactly where the drawing exists.*
+3. **Final Merge**:
+   $$Output = Frame_{bg} + Canvas$$
+   *This fills the "holes" with the colored pixels from your drawing.*
+
+### 3. Coordinate Mapping
+The MediaPipe landmarks are returned as normalized coordinates $(x_{norm}, y_{norm})$ in the range $[0, 1]$. These are mapped to screen pixels using:
+$$x_{pixel} = x_{norm} \cdot Width_{cam}$$
+$$y_{pixel} = y_{norm} \cdot Height_{cam}$$
